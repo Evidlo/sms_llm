@@ -7,17 +7,15 @@ This uses a simple Android application which forwards all SMS messages to Ollama
 Thanks to [ibnux](https://github.com/ibnux/Android-SMS-Gateway-MQTT) for the application which I have modified for 2-way communication over MQTT.
 
 ``` text
-                                                                    
-                      ANDROID PHONE        |          LLM SERVER    
-                                           |                        
-                    +---------------+                               
+                      ANDROID PHONE                  LLM SERVER    
+                                                                   
+                    +---------------+      |                         
                     | SMS Messaging |      |                        
- Your Victims ------|     App       |      |                        
-                    +---------------+                               
-                            |              |                        
+ Your Victims ------|     App       |                              
+                    +---------------+      |                        
                             |              |                        
                     +---------------+              +---------------+
-                    |  Android App  |--------------|  MQTT Broker  |
+                    |  Forward App  |--------------|  MQTT Broker  |
                     +---------------+              +---------------+
                                            |               |        
                                            |       +---------------+

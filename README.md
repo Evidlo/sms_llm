@@ -5,14 +5,12 @@ This is a guide for connecting Android SMS chats to an LLM for fun and chaos.
 This uses a simple Android application which forwards all SMS messages to Ollama via MQTT and some glue logic.
 
 ``` text
-                                                                    
-                      ANDROID PHONE        |          LLM SERVER    
-                                           |                        
-                    +---------------+                               
+                      ANDROID PHONE                  LLM SERVER    
+                                                                   
+                    +---------------+      |                         
                     | SMS Messaging |      |                        
- Your Victims ------|     App       |      |                        
-                    +---------------+                               
-                            |              |                        
+ Your Victims ------|     App       |                              
+                    +---------------+      |                        
                             |              |                        
                     +---------------+              +---------------+
                     |  Android App  |--------------|  MQTT Broker  |

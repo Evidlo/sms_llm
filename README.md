@@ -4,6 +4,8 @@ This is a guide for connecting Android SMS chats to an LLM for fun and chaos.
 
 This uses a simple Android application which forwards all SMS messages to Ollama via MQTT and some glue logic.
 
+Thanks to [ibnux](https://github.com/ibnux/Android-SMS-Gateway-MQTT) for the application which I have modified for 2-way communication over MQTT.
+
 ``` text
                                                                     
                       ANDROID PHONE        |          LLM SERVER    
@@ -63,7 +65,7 @@ And my mosquitto config `/etc/mosquitto/mosquitto.conf`
 
 ### Android App
 
-Install the .apk from the Releases page or build it yourself using the steps below.  Thanks to [ibnux](https://github.com/ibnux/Android-SMS-Gateway-MQTT) for the application which I have modified for 2-way communication over MQTT.
+Install the apk from the [Releases page](https://github.com/Evidlo/sms_llm/releases/) or build it yourself using the steps below.  
 
 In the application `Menu > Set MQTT Server`, set your MQTT host and credentials, then **fully restart the application**.
 

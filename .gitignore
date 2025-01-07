@@ -8,4 +8,4 @@ tmp/
 build
 htmlcov
 
-llm/secrets.py
+llm/secretsfile.py

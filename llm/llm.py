@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 import json
 import ollama
-from datetime.datetime import fromtimestamp
+from datetime import datetime
 from datetime import UTC
 
 from secretsfile import host, port, user, password, model
@@ -42,7 +42,7 @@ def on_message(client, userdata, msg):
             })
         )
         # trim millisecond part and convert to datetime
-        timestamp = fromtimestamp(int(msg['timestamp'][:-3]), UTC)
+        timestamp = datetime.fromtimestamp(int(msg['timestamp'][:-3]), UTC)
         print(f"From {msg['from']} @ {timestamp}:\n    {msg['message']}")
         print(f"    > {response}")
 

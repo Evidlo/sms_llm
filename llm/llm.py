@@ -4,7 +4,7 @@ import ollama
 from datetime import datetime
 from datetime import UTC
 
-from secretsfile import host, port, user, password, model
+from secretsfile import host, port, user, password, model, numbers
 
 
 def llm_response(message: str):
@@ -29,21 +29,23 @@ def on_message(client, userdata, msg):
 
     # dict with keys: 'from', 'timestamp', 'message' and 'type'
     msg = json.loads(msg.payload.decode())
-    if msg['from'] in numbers:
+    number, text = msg['from'], msg['message']
+    # trim millisecond part and convert to datetime
+    timestamp = datetime.fromtimestamp(int(msg['timestamp'][:-3]), UTC)
 
+    # only respond if number is in our list
+    if number in numbers:
         # get a response from the LLM
-        response = llm_response(msg['message'])
+        response = llm_response(text)
         # send response back to phone
         client.publish(
             "sms/send",
             s:=json.dumps({
-                'to': msg['from'],
+                'to': number,
                 'message': response
             })
         )
-        # trim millisecond part and convert to datetime
-        timestamp = datetime.fromtimestamp(int(msg['timestamp'][:-3]), UTC)
-        print(f"From {msg['from']} @ {timestamp}:\n    {msg['message']}")
+        print(f"From {number} @ {timestamp}:\n    {text}")
         print(f"    > {response}")
 
 client = mqtt.Client()

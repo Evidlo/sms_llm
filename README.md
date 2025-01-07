@@ -13,7 +13,7 @@ This uses a simple Android application which forwards all SMS messages to Ollama
                     +---------------+      |                        
                             |              |                        
                     +---------------+              +---------------+
-                    |  Android App  |--------------|  MQTT Broker  |
+                    |  Forward App  |--------------|  MQTT Broker  |
                     +---------------+              +---------------+
                                            |               |        
                                            |       +---------------+

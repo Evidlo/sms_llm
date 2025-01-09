@@ -63,12 +63,21 @@ And my mosquitto config `/etc/mosquitto/mosquitto.conf`
 
 ### Android App
 
-Install the apk from the [Releases page](https://github.com/Evidlo/sms_llm/releases/) or build it yourself using the steps below.  
+Install the apk from the [Releases page](https://github.com/Evidlo/sms_llm/releases/) or build it yourself using the steps below.
 
-In the application `Menu > Set MQTT Server`, set your MQTT host and credentials, then **fully restart the application**.
+Configuring the application:
+
+- `Menu > Set MQTT Server`, set your MQTT host and credentials
+- `Menu > Disable Battery optimization`
+- **fully restart the application**.
 
 
-Building the application.  You must have the Android SDK [installed somewhere](https://developer.android.com/tools).
+<details>
+<summary>
+Building the application from source:
+</summary>
+
+You must have the Android SDK [installed somewhere](https://developer.android.com/tools).
 
     export ANDROID_HOME=[ANDROID ROOT DIR]
     cd android
@@ -76,6 +85,7 @@ Building the application.  You must have the Android SDK [installed somewhere](h
     ./gradlew build -x lint
     # install the apk at android/app/build/outputs/apk/debug/app-debug.apk
 
+</details>
 
 
 ### LLM
@@ -96,4 +106,5 @@ Glue logic setup
     # glue logic dependencies
     pip install -r llm/requirements.txt
     # edit llm/secrets.py with your mosquitto host and credentials
+    # run the glue logic script
     python llm/llm.py

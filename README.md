@@ -3,9 +3,11 @@
 <img src="out2.png" height="500px"/>
 <img src="out.png"/>
 
-This is a guide for connecting Android SMS chats to an LLM for fun and chaos.  LLM-generated messages appear in the default SMS app as if they were sent by the user.
+This is a guide for connecting Android SMS chats to an LLM for fun and chaos.
 
-This uses a simple Android application which forwards all SMS messages to Ollama via MQTT and some glue logic.
+LLM-generated messages appear in the default SMS app as if they were sent by the user.
+
+This uses a simple Android application which forwards all SMS messages to Ollama via MQTT and some glue logic.  Only phone numbers in the whitelist or messages which begin with `llm ` generate an LLM response.
 
 Thanks to [ibnux](https://github.com/ibnux/Android-SMS-Gateway-MQTT) for the application which I have modified for 2-way communication over MQTT.
 
@@ -108,6 +110,6 @@ Glue logic setup
     
     # glue logic dependencies
     pip install -r llm/requirements.txt
-    # edit llm/secrets.py with your mosquitto host and credentials
+    # edit llm/secretsfile.py with your MQTT broker host and credentials, and phone number whitelist
     # run the glue logic script
     python llm/llm.py

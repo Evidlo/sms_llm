@@ -1,5 +1,8 @@
 # SMS LLM
 
+<img src="out2.png" height="500px"/>
+<img src="out.png"/>
+
 This is a guide for connecting Android SMS chats to an LLM for fun and chaos.
 
 This uses a simple Android application which forwards all SMS messages to Ollama via MQTT and some glue logic.

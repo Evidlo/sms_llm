@@ -188,9 +188,20 @@ public class BackgroundService extends Service {
 
             contentIntent = PendingIntent.getActivity(Aplikasi.app, 0, new Intent(Aplikasi.app, MainActivity.class), PendingIntent.FLAG_MUTABLE);
 
-            setNotification(Aplikasi.app.getText(R.string.app_name).toString(), Aplikasi.app.getSharedPreferences("pref", 0).getString("mqtt_server", "tcp://broker.hivemq.com:1883"), "Connecting");
+            setNotification(Aplikasi.app.getText(R.string.app_name).toString(), Aplikasi.app.getSharedPreferences("pref", 0).getString("mqtt_server", "tcp://example.com:1883"), "Connecting");
             LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter("BackgroundService"));
             mqttService();
+        }
+        if ("PUBLISH".equals(intent.getAction()) && mqttAndroidClient != null && mqttAndroidClient.isConnected()) {
+            String topic = intent.getStringExtra("topic");
+            String payload = intent.getStringExtra("payload");
+            try {
+                mqttAndroidClient.publish(topic, payload.getBytes(), 0, false);
+                Fungsi.writeLog("MQTT: Published successfully to " + topic);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Fungsi.writeLog("MQTT: Publish failed: " + e.getMessage());
+            }
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -362,13 +373,13 @@ public class BackgroundService extends Service {
     }
 
     public void subscribeToTopic() {
-        String deviceID = Aplikasi.app.getSharedPreferences("pref",0).getString("deviceID","");
+        String topic = "sms/send";
         try {
-            mqttAndroidClient.subscribe(deviceID, 0, Aplikasi.app, new IMqttActionListener() {
+            mqttAndroidClient.subscribe(topic, 0, Aplikasi.app, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     lockWifi(true);
-                    Fungsi.writeLog("MQTT Subscribed: " + deviceID);
+                    Fungsi.writeLog("MQTT Subscribed: " + topic);
                     setSubtext("Subscribed");
                 }
 
@@ -376,7 +387,7 @@ public class BackgroundService extends Service {
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     exception.printStackTrace();
                     setSubtext("Subscribe Failure");
-                    Fungsi.writeLog("MQTT Subscribe Failed: " + deviceID + "\n" + exception.getMessage());
+                    Fungsi.writeLog("MQTT Subscribe Failed: " + topic + "\n" + exception.getMessage());
                 }
             });
         } catch (MqttException ex) {

@@ -37,17 +37,18 @@ public class SmsListener extends BroadcastReceiver {
                 String messageTimestamp = String.valueOf(smsMessage.getTimestampMillis());
                 Log.i("SMS From", messageFrom);
                 Log.i("SMS Body", messageBody);
-                Fungsi.writeLog("SMS: RECEIVED : " + messageFrom + " " + messageBody);
-                if (url != null) {
-                    if (sp.getBoolean("gateway_on", true)) {
-                        sendPOST(url, messageFrom, messageBody, "received", messageTimestamp);
-                    } else {
-                        Fungsi.writeLog("GATEWAY OFF: SMS NOT POSTED TO SERVER");
-                    }
-
-                } else {
-                    Log.i("SMS URL", "URL not SET");
-                }
+                Fungsi.writeLog("!SMS: RECEIVED : " + messageFrom + " " + messageBody);
+                String topic = sp.getString("mqtt_topic", "sms/received");
+                String payload = String.format("{\"from\":\"%s\",\"message\":\"%s\",\"timestamp\":\"%s\",\"type\":\"received\"}",
+                    messageFrom, messageBody, messageTimestamp);
+                
+                Intent mqttIntent = new Intent(context, BackgroundService.class);
+                mqttIntent.setAction("PUBLISH");
+                mqttIntent.putExtra("topic", topic);
+                mqttIntent.putExtra("payload", payload);
+                context.startService(mqttIntent);
+                
+                Fungsi.writeLog("SMS: MQTT PUBLISH : " + topic + " : " + payload);
             }
         }
     }

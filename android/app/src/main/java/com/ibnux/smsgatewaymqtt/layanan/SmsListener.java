@@ -21,6 +21,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import javax.net.ssl.HttpsURLConnection;
+import org.json.JSONObject;
 
 public class SmsListener extends BroadcastReceiver {
 
@@ -31,25 +32,46 @@ public class SmsListener extends BroadcastReceiver {
         if (sp == null) sp = context.getSharedPreferences("pref", 0);
         String url = sp.getString("urlPost", null);
         if (Telephony.Sms.Intents.SMS_RECEIVED_ACTION.equals(intent.getAction())) {
-            for (SmsMessage smsMessage : Telephony.Sms.Intents.getMessagesFromIntent(intent)) {
-                String messageFrom = smsMessage.getOriginatingAddress();
-                String messageBody = smsMessage.getMessageBody();
-                String messageTimestamp = String.valueOf(smsMessage.getTimestampMillis());
-                Log.i("SMS From", messageFrom);
-                Log.i("SMS Body", messageBody);
-                Fungsi.writeLog("!SMS: RECEIVED : " + messageFrom + " " + messageBody);
-                String topic = sp.getString("mqtt_topic", "sms/received");
-                String payload = String.format("{\"from\":\"%s\",\"message\":\"%s\",\"timestamp\":\"%s\",\"type\":\"received\"}",
-                    messageFrom, messageBody, messageTimestamp);
-                
-                Intent mqttIntent = new Intent(context, BackgroundService.class);
-                mqttIntent.setAction("PUBLISH");
-                mqttIntent.putExtra("topic", topic);
-                mqttIntent.putExtra("payload", payload);
-                context.startService(mqttIntent);
-                
-                Fungsi.writeLog("SMS: MQTT PUBLISH : " + topic + " : " + payload);
+            // Get all message parts
+            SmsMessage[] messages = Telephony.Sms.Intents.getMessagesFromIntent(intent);
+            if (messages == null || messages.length == 0) return;
+            
+            // Use first message for sender and timestamp
+            String messageFrom = messages[0].getOriginatingAddress();
+            String messageTimestamp = String.valueOf(messages[0].getTimestampMillis());
+            
+            // Concatenate all message parts
+            StringBuilder fullMessage = new StringBuilder();
+            for (SmsMessage smsMessage : messages) {
+                fullMessage.append(smsMessage.getMessageBody());
             }
+            String messageBody = fullMessage.toString();
+
+            Log.i("SMS From", messageFrom);
+            Log.i("SMS Body", messageBody);
+            Fungsi.writeLog("!SMS: RECEIVED : " + messageFrom + " " + messageBody);
+            String topic = sp.getString("mqtt_topic", "sms/received");
+
+            JSONObject json = new JSONObject();
+            try {
+                json.put("from", messageFrom);
+                json.put("message", messageBody);
+                json.put("timestamp", messageTimestamp);
+                json.put("type", "received");
+            } catch (Exception e) {
+                Log.e("SmsListener", "Error creating JSON", e);
+                return;
+            }
+
+            String payload = json.toString();
+
+            Intent mqttIntent = new Intent(context, BackgroundService.class);
+            mqttIntent.setAction("PUBLISH");
+            mqttIntent.putExtra("topic", topic);
+            mqttIntent.putExtra("payload", payload);
+            context.startService(mqttIntent);
+            
+            Fungsi.writeLog("SMS: MQTT PUBLISH : " + topic + " : " + payload);
         }
     }
 
